@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+	<!-- Bootstrap CSS -->
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
+
+	<!-- CSS local -->
+	<link rel="stylesheet" href="styles.css">
+	<title>My Social Network</title>
+	<script src="blog.js"></script>
+</head>
+
+<body>
+	<div class="container">
+		<header class="row">
+			<h1>Social Network</h1>
+			<p>Share your thoughts</p>
+		</header>
+		
+		<main class="row">
+			<section id="new-post">
+				<h3>New post</h3>
+				<input id="post-title" placeholder="Post title">
+				<textarea id="post-text" placeholder="Type your message..." cols=50 rows=5></textarea>
+				<button id="add-post">Add post</button>
+			</section>
+
+			<hr>
+			<section id="timeline">
+				<!-- ... -->
+				<h2>My timeline</h2>
+
+				<template id="post-template">
+					<article class="post" id="fjofaisd99">
+						<div class="row">
+							<h3>Post title</h3>
+						</div>
+						<p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolore aliquam optio perferendis
+							deleniti, inventore fugit iste sapiente. Aliquid labore aut ipsam enim incidunt harum,
+							minima porro deleniti unde possimus rem!</p>
+						<p class="displayLikes"></p>
+						<div class="flex">
+							<button>Curtir</button>
+							<button>Apagar Postagem</button>
+
+							<dialog>
+								<h2>Você tem certeza que quer remover a postagem?</h2>
+								<div class="flex">
+									<button>Apagar</button>
+									<button>Cancelar</button>
+								</div>
+							  </dialog>
+
+						</div>
+						<h5>Comentários</h5>
+						<hr>
+						<div id="">
+							
+							
+						</div>
+					</article>
+				</template>
+
+				<template id="comment-template">
+					<article class="comment" id="askdakdk">
+						<header>
+							<div class="flex">
+								<h6>Anônimo</h6>
+								<h6 class="font-thin dataCriacao">30/05/2023</h6>
+							</div>
+						</header>
+						<p class="conteudo">Conteúdo do Comentário</p>
+						<hr>  
+					</article>
+				</template>
+
+				<!-- ... -->
+				<br>
+			</section>
+
+		</main>
+		<footer class="row">
+			<h3>Social Network</h3>
+			<p>Powered by us</p>
+			<p>&reg; All rights reserved | <a href="#">Contact us</a></p>
+		</footer>
+	</div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz" crossorigin="anonymous"></script>
+	<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js" integrity="sha384-fbbOQedDUMZZ5KreZpsbe1LCZPVmfTnH7ois6mU1QK+m14rQ1l2bGBq41eYeM/fS" crossorigin="anonymous"></script>
+
+</body>
+
+</html>
