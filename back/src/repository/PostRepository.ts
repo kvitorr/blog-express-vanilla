@@ -40,7 +40,8 @@ class PostRepository {
     public getAllPosts = async (): Promise<Post[]> => {
         const scriptBusca = `
         SELECT cod_post, titulo, conteudo, likes, created_at, att_at
-        FROM postagem
+        FROM postagem 
+        ORDER BY created_at DESC
         `;
 
         const { rows } = await this.db.query<Post>(scriptBusca)
@@ -63,15 +64,16 @@ class PostRepository {
         return rows[0]
     }
 
-    public getCommentsByPost = async (id: string): Promise<Comentario[]> => {
+    public getCommentsByPost = async (id: string, limit: number, offset:number): Promise<Comentario[]> => {
         const scriptBusca = `
-        SELECT comentario.cod_comentario, comentario.conteudo, comentario.cod_post FROM comentario
-        INNER JOIN postagem
-        ON postagem.cod_post = comentario.cod_post
-        WHERE comentario.cod_post = $1
-        `;
+        SELECT * FROM comentario
+        WHERE cod_post = $1
+        ORDER BY created_at DESC
+        LIMIT $2
+        OFFSET $3
+        `
 
-        const { rows } = await this.db.query<Comentario>(scriptBusca, [id])
+        const { rows } = await this.db.query<Comentario>(scriptBusca, [id, limit, offset])
 
         if (rows.length === 0) {
             throw new NotFoundError('Comments not found');
@@ -97,6 +99,17 @@ class PostRepository {
         `
 
         await this.db.query(scriptDelete, [id])
+    }
+
+    public countCommentsById = async (postId:string): Promise<number> => {
+        const scriptCountCommentsById = `
+        SELECT COUNT(*) FROM COMENTARIO
+        WHERE COD_POST = $1
+        `
+
+        const response = await this.db.query(scriptCountCommentsById, [postId])
+
+        return Number(response.rows[0].count)
     }
 }
 

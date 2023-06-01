@@ -29,12 +29,34 @@ class PostController {
 
     public getCommentsByPost = async (request: Request , response: Response, next: NextFunction)  => {
         const postId: string = request.params.id
-        const offset = request.query.offset
-        const limit = request.query.limit 
+
+        //Quantidade de comentários que serão carregados do bd
+        const limit = isNaN(Number(request.query.limit as string)) ? 3 : Number(request.query.limit as string)
+
+        //A partir de qual linha dos resultados começará a ser exibido
+        const offset = isNaN(Number(request.query.offset as string)) ? 0 : Number(request.query.offset as string)
 
 
-        const comments: Comentario[] = await PostService.getCommentsByPost(postId)
-        response.status(200).json(comments)
+        const comments: Comentario[] = await PostService.getCommentsByPost(postId, limit, offset)
+        const totalComments: number = await PostService.countCommentsById(postId, limit, offset)
+
+        //Calculo qual será o novo início de exibição dos resultados
+        const nextOffset = offset + limit
+
+        //Se o novo início for menor que o total de comentários significa que ainda existem comentários a serem exibidos
+        const nextUrl = nextOffset < totalComments ? `posts/${postId}/comments?limit=${limit}&offset=${nextOffset}` : null;
+        
+        //const previousOffset = offset - limit < 0 ? null : offset - limit
+        //const previousUrl = previousOffset != null ? `posts/${postId}/comments?limit=${limit}&offset=${previousOffset}` : null;
+        
+
+        response.status(200).json({
+            nextUrl,
+            limit,
+            offset,
+            totalComments,
+            comments
+        })
     }
 
     public updatePartialPost = async(request: Request , response: Response, next: NextFunction)  => {

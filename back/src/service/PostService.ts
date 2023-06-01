@@ -30,8 +30,8 @@ class PostService {
         return await PostRepository.getPostById(id)
     }
 
-    public getCommentsByPost = async (id: string): Promise<Comentario[]> => {
-        return await PostRepository.getCommentsByPost(id)
+    public getCommentsByPost = async (id: string, limit: number, offset:number): Promise<Comentario[]> => {
+        return await PostRepository.getCommentsByPost(id, limit, offset)
     }
 
     public updatePartialPost = async(post: Post): Promise<void> => {
@@ -40,6 +40,10 @@ class PostService {
 
     public deletePostById = async (id: string): Promise<void> => {
         return await PostRepository.deletePostById(id)
+    }
+
+    public countCommentsById = async (postId: string, limit: number, offset: number): Promise<number> => {
+        return await PostRepository.countCommentsById(postId)
     }
 }
 
