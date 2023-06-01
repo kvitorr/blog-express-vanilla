@@ -1,4 +1,9 @@
-const loadPosts = async () => {
+
+
+
+
+
+const getPostsFromDatabase = async () => {
     const config = {
         'method': 'GET',
         'headers': {
@@ -6,35 +11,21 @@ const loadPosts = async () => {
         },
     };
 
-    const response = await fetch('http://localhost:3000/posts', config)
-    const posts = await response.json();
+    const responseGetPosts = await fetch('http://localhost:3000/posts', config)
+    const posts = await responseGetPosts.json();
 
     if (Array.isArray(posts)) {
-        posts.forEach(post => {
-            appendPost(post);
+        
+        let responseCommentsByPost
+        let commentsByPost
+
+        posts.forEach( async (post) => {
+            responseCommentsByPost = await fetch(`http://localhost:3000/posts/${post.cod_post}/comments`, config)
+            commentsByPost = await responseCommentsByPost.json()  
+            appendPost(post, commentsByPost);
         });
 
     } 
-}
-
-const loadComments = async () => {
-    const config = {
-        'method': 'GET',
-        'headers': {
-            'Content-Type': 'application/json'
-        },
-    };
-
-    const response = await fetch('http://localhost:3000/comments', config)
-    const comments = await response.json();
-
-    if (Array.isArray(comments)) {
-        comments.forEach(comment => {
-            appendComment(comment);
-        });
-
-    } 
-
 }
 
 const addPost = async() => {
@@ -59,7 +50,7 @@ const addPost = async() => {
 }
 
 
-const appendPost = (post) => {
+const appendPost = (post, responseCommentsByPost) => {
     const template = document.getElementById('post-template');
     const postElement = document.importNode(template.content, true);
     const article = postElement.querySelector('.post')
@@ -67,7 +58,9 @@ const appendPost = (post) => {
     const buttons = postElement.querySelectorAll('button')
     const postItens = postElement.querySelectorAll('p')
     const dialog = postElement.querySelector('dialog')
-    const commentsSection = postElement.lastElementChild;
+    const commentsSection = postElement.getElementById('comments-section');
+
+    const comments = responseCommentsByPost.comments
 
 
     article.id = post.cod_post
@@ -78,14 +71,57 @@ const appendPost = (post) => {
     postItens[1].innerText = post.likes + " like(s)";
 
 
+    
     buttons[0].onclick = () => likePost(article.id);
     buttons[1].onclick = () => openDeleteDialog(article.id)
     buttons[2].onclick = () => deletePost(article.id);
     buttons[3].onclick = () => closeDeleteDialog(article.id)
-
-
+    buttons[4].onclick = () => loadMoreComments(article.id)
+    buttons[4].id = `load-comments-${article.id}`
+    
     document.getElementById('timeline').append(postElement);
+    
+    if (Array.isArray(comments)) {
+        comments.forEach( async (comment) => {      
+            appendComment(comment);
+        });
+        if(responseCommentsByPost.totalComments <= 3){
+            buttons[4].style.display = 'none'
+        }
+    } 
 }
+
+
+const loadMoreComments = async (idPost) => {
+
+    const element = document.getElementById(`comments-section-${idPost}`);
+
+    const nodes = element.querySelectorAll('.comment');
+    const offset = nodes.length;
+
+    const config = {
+        'method': 'GET',
+        'headers': {
+            'Content-Type': 'application/json'
+        },
+    };
+
+    const responseCommentsByPost = await fetch(`http://localhost:3000/posts/${idPost}/comments?offset=${offset}&limit=${3}`, config)
+    const commentsByPost = await responseCommentsByPost.json() 
+    
+    const comments = commentsByPost.comments 
+    if (Array.isArray(comments)) {
+        comments.forEach( async (comment) => {      
+            appendComment(comment);
+        });
+    } 
+    
+    if(!commentsByPost.nextUrl) {
+        const button = document.getElementById(`load-comments-${idPost}`)
+        button.style.display = 'none'
+    }
+}
+
 
 
 const updateLikePost = (idPost, likes) => {
@@ -138,11 +174,7 @@ const removeDeletedPostFromTimeline = (idPost) => {
     post.remove()
 }
 
-
-
-
 const appendComment = (comment) => {
-    console.log(comment)
     const template = document.getElementById('comment-template');
     const commentElement = document.importNode(template.content, true);
 
@@ -161,7 +193,6 @@ const appendComment = (comment) => {
 window.onload = () => {
     const btnAddPost = document.getElementById('add-post')
     btnAddPost.onclick = addPost;
-    loadPosts()
-    loadComments()
+    getPostsFromDatabase()
 }
 
