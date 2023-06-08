@@ -44,9 +44,16 @@ const app = {
       const postItens = postElement.querySelectorAll('p');
       const dialog = postElement.querySelector('dialog');
       const commentsSection = postElement.querySelector('#comments-section');
-
+      const insertCommentSection = postElement.querySelector('#insert-comment')
 
       article.id = post.cod_post;
+
+
+
+      const textAreaInsertComment = insertCommentSection.querySelector('textarea')
+      textAreaInsertComment.id = `comment-text-${article.id}`
+
+      insertCommentSection.id = `insert-comment-${article.id}`
       commentsSection.id = `comments-section-${article.id}`;
       dialog.id = `delete-dialog-container-${article.id}`;
       postTitle.innerText = post.titulo;
@@ -57,10 +64,23 @@ const app = {
       buttons[1].onclick = () => dom.showDialog(dialog.id);
       buttons[2].onclick = () => app.deletePost(article.id);
       buttons[3].onclick = () => dom.closeDialog(dialog.id);
-      buttons[4].onclick = () => app.loadMoreComments(article.id);
-      buttons[4].id = `load-comments-${article.id}`;
+      buttons[4].id = `open-insert-comment-${article.id}`
+      buttons[4].onclick = () => dom.openInsertCommentSection(article.id);
+      
+      buttons[5].onclick = () => {
+        app.addComment(article.id)
+        dom.closeInsertCommentSection(article.id)
+      }
+
+      buttons[6].onclick = () => dom.closeInsertCommentSection(article.id)
+
+
+      buttons[7].onclick = () => app.loadMoreComments(article.id);
+      buttons[7].id = `load-comments-${article.id}`;
       
       dom.appendPost(postElement);
+
+
 
       if (responseCommentsByPost.totalComments <= 3 || responseCommentsByPost.message) {
         dom.hideLoadMoreButton(article.id);
@@ -121,7 +141,7 @@ const app = {
       post.remove();
     },
     
-    appendComment: (comment) => {
+    appendComment: (comment, fromDb = true) => {
       const commentElement = dom.createCommentElement();
       const content = commentElement.querySelector('.conteudo');
       const date = commentElement.querySelector('.dataCriacao');
@@ -129,10 +149,31 @@ const app = {
       const formattedDate = utils.formatDate(comment.created_at);
       date.innerText = formattedDate;
       content.innerText = comment.conteudo;
-      
       const commentsSection = document.getElementById(`comments-section-${comment.cod_post}`);
-      dom.appendComment(commentElement, commentsSection);
+
+      if(fromDb) {
+        dom.appendComment(commentElement, commentsSection);
+      } else {
+        dom.prependComment(commentElement, commentsSection);
+      }
+      
     },
+
+    addComment: async (idPost) => {
+      const newComment= {
+        conteudo: document.getElementById(`comment-text-${idPost}`).value,
+        cod_post: `${idPost}`
+      };
+      
+      try {
+        const comment = await api.addComment(newComment);
+        app.appendComment(comment, false);
+      } catch (error) {
+        console.error('Erro ao adicionar o post:', error);
+      }
+    },
+
+    
     
     init: () => {
       const btnAddPost = document.getElementById('add-post');

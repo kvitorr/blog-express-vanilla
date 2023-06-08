@@ -60,6 +60,17 @@ const api = {
                 'Content-Type': 'application/json'
             },
         })
+    },
+
+    addComment: async (newComment) => {
+        const response = await fetch('http://localhost:3000/comments', {
+            'method': 'POST',
+            'headers': {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(newComment)
+        });
+        return await response.json();
     }
 }
 
