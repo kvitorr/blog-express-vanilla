@@ -6,7 +6,7 @@ import { v4 as uuidv4 } from 'uuid';
 
 
 class PostService {
-    public createPost = async (titulo: string, conteudo: string): Promise<Post> => {
+    public createPost = async (titulo: string, conteudo: string, cod_usuario: number): Promise<Post> => {
         const uuid: string = uuidv4()
 
         const newPost: Post = {
@@ -15,7 +15,8 @@ class PostService {
             "conteudo": conteudo,
             "likes": 0,
             "created_at": new Date(),
-            "att_at": null
+            "att_at": null,
+            "cod_usuario": cod_usuario
         }
 
         return await PostRepository.createPost(newPost)

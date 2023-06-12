@@ -8,8 +8,8 @@ import PostService from "../service/PostService"
 class PostController {
 
     public createPost = async (request: Request , response: Response, next: NextFunction) => {
-        const { titulo, conteudo } = request.body
-        const newPost: Post = await PostService.createPost(titulo, conteudo)
+        const { titulo, conteudo, cod_usuario } = request.body
+        const newPost: Post = await PostService.createPost(titulo, conteudo, cod_usuario)
 
         response.status(201).json(newPost)
     }
@@ -84,7 +84,7 @@ class PostController {
         response.status(200).json(postFound.likes)
     }
 
-    public deletePostById = async (request: Request , response: Response, next: NextFunction) => {
+    public deletePostById = async (request: Request, response: Response, next: NextFunction) => {
         const postId = request.params.id
         await PostService.deletePostById(postId)
 

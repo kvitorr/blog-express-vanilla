@@ -7,14 +7,14 @@ class CommentRepository {
 
     public createComment = async (comentario: Comentario): Promise<void> => {
         const scriptBusca = `
-        SELECT cod_comentario, conteudo, cod_post, created_at
+        SELECT cod_comentario, conteudo, cod_post, created_at, cod_usuario
         FROM comentario
         WHERE cod_comentario = $1 
         `;
     
         const scriptInsert = `
         INSERT INTO comentario
-        VALUES($1, $2, $3) 
+        VALUES($1, $2, $3, DEFAULT, $4) 
         `;
     
         const commentFound: QueryResult<Comentario> = await db.query<Comentario>(scriptBusca, [comentario.cod_comentario]);
@@ -24,13 +24,13 @@ class CommentRepository {
             throw new BadRequestError('Comment already exists');
         }
     
-        await db.query<Comentario>(scriptInsert, [comentario.cod_comentario, comentario.conteudo, comentario.cod_post]);
+        await db.query<Comentario>(scriptInsert, [comentario.cod_comentario, comentario.conteudo, comentario.cod_post, comentario.cod_usuario]);
     }
     
     
     public getAllComments = async (): Promise<Comentario[]> => {
         const scriptBusca = `
-        SELECT cod_comentario, conteudo, cod_post, created_at
+        SELECT cod_comentario, conteudo, cod_post, created_at, cod_usuario
         FROM comentario
         `;
     
@@ -41,7 +41,7 @@ class CommentRepository {
     
     public getCommentById = async (id: string): Promise<Comentario> => {
         const scriptBusca = `
-        SELECT cod_comentario, conteudo, cod_post, created_at
+        SELECT cod_comentario, conteudo, cod_post, created_at, cod_usuario
         FROM comentario
         WHERE cod_comentario = $1
         `;

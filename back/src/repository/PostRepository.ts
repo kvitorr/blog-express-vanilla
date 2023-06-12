@@ -8,14 +8,11 @@ import { Comentario } from "../entidades/Comentario";
 
 class PostRepository {
     private db: Pool = db
-    
-    /*constructor(db: Pool){
-        this.db = db;
-    }*/
+
 
     public createPost = async (post: Post): Promise<Post> => {
         const scriptBusca = `
-        SELECT cod_post, titulo, conteudo, likes, created_at, att_at
+        SELECT cod_post, titulo, conteudo, likes, created_at, att_at, cod_usuario
         FROM postagem
         WHERE cod_post = $1 
         `;
@@ -28,18 +25,18 @@ class PostRepository {
 
         const scriptInsert = `
         INSERT INTO postagem 
-        VALUES($1, $2, $3, $4, DEFAULT, DEFAULT) 
+        VALUES($1, $2, $3, $4, DEFAULT, DEFAULT, $5) 
         `;
 
 
-        await this.db.query<Post>(scriptInsert, [post.cod_post, post.titulo, post.conteudo, post.likes]);
+        await this.db.query<Post>(scriptInsert, [post.cod_post, post.titulo, post.conteudo, post.likes, post.cod_usuario]);
         return post;
     }
 
 
     public getAllPosts = async (): Promise<Post[]> => {
         const scriptBusca = `
-        SELECT cod_post, titulo, conteudo, likes, created_at, att_at
+        SELECT cod_post, titulo, conteudo, likes, created_at, att_at, cod_usuario
         FROM postagem 
         ORDER BY created_at DESC
         `;
@@ -50,7 +47,7 @@ class PostRepository {
 
     public getPostById = async (id: string): Promise<Post> => {
         const scriptBusca = `
-        SELECT cod_post, titulo, conteudo, likes, created_at, att_at
+        SELECT cod_post, titulo, conteudo, likes, created_at, att_at, cod_usuario
         FROM postagem
         WHERE cod_post = $1
         `;
@@ -85,11 +82,11 @@ class PostRepository {
     public updatePartialPost = async(post: Post): Promise<void> => {
         const scriptUpdate = `
         UPDATE postagem
-        SET conteudo = $1, titulo = $2, likes = $3, att_At = $4
-        WHERE cod_post = $5
+        SET conteudo = $1, titulo = $2, likes = $3, att_At = $4, cod_usuario = $5
+        WHERE cod_post = $6
         `
 
-        await this.db.query(scriptUpdate, [post.conteudo, post.titulo, post.likes, post.att_at, post.cod_post])
+        await this.db.query(scriptUpdate, [post.conteudo, post.titulo, post.likes, post.att_at, post.cod_usuario, post.cod_post])
     }
 
     public deletePostById = async (id: string): Promise<void> => {

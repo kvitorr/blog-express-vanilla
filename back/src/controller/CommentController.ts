@@ -26,13 +26,14 @@ class CommentController {
     }
 
     public createComment = async (request: Request, response: Response) => {
-        const { conteudo, cod_post } = request.body
+        const { conteudo, cod_post, cod_usuario } = request.body
         const uuid: string = uuidv4()
         const newComment: Comentario = {
             "cod_comentario": uuid,
             "conteudo": conteudo,
             "cod_post": cod_post,
-            "created_at": new Date()
+            "created_at": new Date(),
+            "cod_usuario": cod_usuario
         }
     
         await CommentService.createComment(newComment)

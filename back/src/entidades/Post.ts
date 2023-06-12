@@ -5,4 +5,5 @@ export interface Post {
     likes: number;
     created_at: Date;
     att_at: Date | null;
+    cod_usuario: number;
 }
